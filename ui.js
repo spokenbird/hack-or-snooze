@@ -17,6 +17,7 @@ $(async function() {
   // global currentUser variable
   let currentUser = null;
 
+  console.log(currentUser);
   await checkIfLoggedIn();
 
   /**
@@ -201,11 +202,19 @@ $(async function() {
   });
 
   /* Event listener for Story Submission Form */
+  $submitForm.on("submit", function() {
+    let author = $("#author").val();
+    let title = $("#title").val();
+    let url = $("#url").val();
+    
 
+    
+    let newStory = storyList.addStory(currentUser, {author, title, url});
+
+    
+    
+  });
   
-  let author = $("#author").val();
-  let title = $("#title").val();
-  let url = $("#url").val();
 
 
   /* simple function to pull the hostname from a URL */
