@@ -202,17 +202,17 @@ $(async function() {
   });
 
   /* Event listener for Story Submission Form */
-  $submitForm.on("submit", function() {
+  $submitForm.on("submit", async function() {
     let author = $("#author").val();
     let title = $("#title").val();
     let url = $("#url").val();
     
+    let newStory = await storyList.addStory(currentUser, {author, title, url});
+    console.log(newStory);
+    generateStories();
+    generateStoryHTML(newStory);
 
-    
-    let newStory = storyList.addStory(currentUser, {author, title, url});
-
-    
-    
+    // console.log(storyList.stories);
   });
   
 

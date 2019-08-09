@@ -52,8 +52,10 @@ class StoryList {
       "token" : user.loginToken,
       "story" : newStory
     });
-    console.log(response);
-    return response;
+    const addedStory = new Story(response.data.story);
+    user.ownStories.unshift(addedStory);
+    this.stories.unshift(addedStory);
+    return addedStory;
   }
 }
 
