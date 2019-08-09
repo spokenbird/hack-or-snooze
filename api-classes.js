@@ -49,8 +49,8 @@ class StoryList {
     // the script.js file where it will be appended to the DOM
 
     const response = await axios.post(`${BASE_URL}/stories`, {
-      "token" : user.loginToken,
-      "story" : newStory
+      token: user.loginToken,
+      story: newStory
     });
     const addedStory = new Story(response.data.story);
     user.ownStories.unshift(addedStory);
@@ -137,6 +137,7 @@ class User {
    * This function uses the token & username to make an API request to get details
    *   about the user. Then it creates an instance of user with that info.
    */
+  
 
   static async getLoggedInUser(token, username) {
     // if we don't have user info, return null
@@ -160,7 +161,33 @@ class User {
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
   }
+
+  async addFavorite(token, storyID) {
+    // console.log("token in the api add favorite method: ", token);
+    // console.log("story ID add favorite: ", storyID)
+    const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyID}`, { token });
+    console.log("add favorite: ", currentUser);
+
+
+    // Plan to access the response and pass that into the user instance's favorite stories array
+  }
+
+  async removeFavorite(token, storyID) {
+    // console.log("token in the api remove favorite method: ", token);
+    // console.log("story ID remove favorite: ", storyID)
+    const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyID}`, {data: { token }});
+
+
+    console.log("removeFavorite: ", currentUser);
+
+
+
+    // Plan to access the response and pass that into the user instance's favorite stories array
+  }
+
 }
+ 
+
 
 /**
  * Class to represent a single story.

@@ -1,4 +1,4 @@
-$(async function() {
+$(async function () {
   // cache some selectors we'll be using quite a bit
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
@@ -17,7 +17,6 @@ $(async function() {
   // global currentUser variable
   let currentUser = null;
 
-  console.log(currentUser);
   await checkIfLoggedIn();
 
   /**
@@ -25,7 +24,7 @@ $(async function() {
    *  If successfully we will setup the user instance
    */
 
-  $loginForm.on("submit", async function(evt) {
+  $loginForm.on("submit", async function (evt) {
     evt.preventDefault(); // no page-refresh on submit
 
     // grab the username and password
@@ -45,7 +44,7 @@ $(async function() {
    *  If successfully we will setup a new user instance
    */
 
-  $createAccountForm.on("submit", async function(evt) {
+  $createAccountForm.on("submit", async function (evt) {
     evt.preventDefault(); // no page refresh
 
     // grab the required fields
@@ -64,7 +63,7 @@ $(async function() {
    * Log Out Functionality
    */
 
-  $navLogOut.on("click", function() {
+  $navLogOut.on("click", function () {
     // empty out local storage
     localStorage.clear();
     // refresh the page, clearing memory
@@ -75,7 +74,7 @@ $(async function() {
    * Event Handler for Clicking Login
    */
 
-  $navLogin.on("click", function() {
+  $navLogin.on("click", function () {
     // Show the Login and Create Account Forms
     $loginForm.slideToggle();
     $createAccountForm.slideToggle();
@@ -86,7 +85,7 @@ $(async function() {
    * Event handler for Navigation to Homepage
    */
 
-  $("body").on("click", "#nav-all", async function() {
+  $("body").on("click", "#nav-all", async function () {
     hideElements();
     await generateStories();
     $allStoriesList.show();
@@ -163,6 +162,7 @@ $(async function() {
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+      <i class="far fa-star"></i>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -197,24 +197,22 @@ $(async function() {
 
   /* simple function to show story submission form */
 
-  $submitLink.click(function() {
+  $submitLink.click(function () {
     $submitForm.slideToggle();
   });
 
   /* Event listener for Story Submission Form */
-  $submitForm.on("submit", async function() {
+  $submitForm.on("submit", async function () {
     let author = $("#author").val();
     let title = $("#title").val();
     let url = $("#url").val();
-    
-    let newStory = await storyList.addStory(currentUser, {author, title, url});
-    console.log(newStory);
-    generateStories();
-    generateStoryHTML(newStory);
 
-    // console.log(storyList.stories);
+    let newStory = await storyList.addStory(currentUser, { author, title, url });
+    await generateStories();
+    generateStoryHTML(newStory);
+    $submitForm.slideToggle();
   });
-  
+
 
 
   /* simple function to pull the hostname from a URL */
@@ -240,4 +238,22 @@ $(async function() {
       localStorage.setItem("username", currentUser.username);
     }
   }
+
+
+  /* Function that handles favorites */ 
+  $(".articles-container").on("click", "i", function(e) {
+    var storyID = $(e.target).parent().attr("id");
+    if ($(e.target).hasClass("far")) {
+      // add to favorites
+  
+      currentUser.addFavorite(currentUser.loginToken, storyID);
+    } else {
+      // remove from favorites
+      currentUser.removeFavorite(currentUser.loginToken, storyID);
+    }
+    $(e.target).toggleClass("far fas")
+  });
+  
+  console.log(currentUser);
+
 });
