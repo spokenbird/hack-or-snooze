@@ -163,24 +163,15 @@ class User {
   }
 
   async addFavorite(token, storyID) {
-    // console.log("token in the api add favorite method: ", token);
-    // console.log("story ID add favorite: ", storyID)
     const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyID}`, { token });
-    console.log("add favorite: ", currentUser);
-
+    this.favorites = response.data.user.favorites;
 
     // Plan to access the response and pass that into the user instance's favorite stories array
   }
 
   async removeFavorite(token, storyID) {
-    // console.log("token in the api remove favorite method: ", token);
-    // console.log("story ID remove favorite: ", storyID)
     const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyID}`, {data: { token }});
-
-
-    console.log("removeFavorite: ", currentUser);
-
-
+    this.favorites = response.data.user.favorites;
 
     // Plan to access the response and pass that into the user instance's favorite stories array
   }

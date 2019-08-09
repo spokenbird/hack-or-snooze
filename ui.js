@@ -10,6 +10,7 @@ $(async function () {
   const $navLogOut = $("#nav-logout");
   const $mainNav = $(".main-nav-links");
   const $submitLink = $("#nav-submit");
+  const $allFavoritesList = $('#favorited-articles');
 
   // global storyList variable
   let storyList = null;
@@ -109,6 +110,18 @@ $(async function () {
 
     if (currentUser) {
       showNavForLoggedInUser();
+      let currentFavorites = {};
+      for (let key of currentUser.favorites) {
+        if (currentFavorites[key] === undefined) {
+          currentFavorites[key.storyId] = 1;
+        }
+      }
+      $allStoriesList.children().each(function (index, storyItem) {
+        let storyItemID = $(storyItem).attr('id');
+        if (currentFavorites.hasOwnProperty(storyItemID)) {
+          $(storyItem).children().removeClass('far').addClass('fas');
+        }
+      })
     }
   }
 
@@ -202,7 +215,9 @@ $(async function () {
   });
 
   /* Event listener for Story Submission Form */
-  $submitForm.on("submit", async function () {
+  $submitForm.on("submit", async function (event) {
+    event.preventDefault();
+
     let author = $("#author").val();
     let title = $("#title").val();
     let url = $("#url").val();
@@ -240,20 +255,40 @@ $(async function () {
   }
 
 
-  /* Function that handles favorites */ 
-  $(".articles-container").on("click", "i", function(e) {
-    var storyID = $(e.target).parent().attr("id");
-    if ($(e.target).hasClass("far")) {
-      // add to favorites
-  
-      currentUser.addFavorite(currentUser.loginToken, storyID);
-    } else {
-      // remove from favorites
-      currentUser.removeFavorite(currentUser.loginToken, storyID);
+  /* Function that handles favorites */
+  $(".articles-container").on("click", "i", function (e) {
+    if (currentUser) {
+      var storyID = $(e.target).parent().attr("id");
+      if ($(e.target).hasClass("far")) {
+        // add to favorites
+
+        currentUser.addFavorite(currentUser.loginToken, storyID);
+      } else {
+        // remove from favorites
+        currentUser.removeFavorite(currentUser.loginToken, storyID);
+      }
+      $(e.target).toggleClass("far fas")
     }
-    $(e.target).toggleClass("far fas")
   });
-  
-  console.log(currentUser);
+
+  /* Function that shows favorites on clicking favorites link */
+  $('#nav-favorites').click(function () {
+    hideElements();
+    console.log(currentUser.favorites);
+    for (const favorite of currentUser.favorites) {
+      hostName = getHostName(favorite.url);
+      $allFavoritesList.append(`<li id="${favorite.storyId}">
+        <i class="fas fa-star"></i>
+        <a class="article-link" href="${favorite.url}" target="a_blank">
+          <strong>${favorite.title}</strong>
+        </a>
+        <small class="article-author">by ${favorite.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${favorite.username}</small>
+      </li>
+    `);
+    }
+    $allFavoritesList.slideToggle();
+  });
 
 });
