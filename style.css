@@ -145,6 +145,10 @@ form > hr {
   cursor: pointer;
 }
 
+.far.fa-trash-alt.delete {
+  background-color: red;
+}
+
 .star,
 .trash-can,
 .pencil {

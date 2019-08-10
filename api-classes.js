@@ -58,10 +58,11 @@ class StoryList {
     return addedStory;
   }
   
+  // Method to move story ID from Story List class
   async removeStory(token, storyId) {
     const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, {data: { token }});
-    console.log(response);
-    this.ownStories = response.data.user.favorites;
+    console.log("response in api for removestory: ", response);
+    return response.data.story;
 
     // Plan to access the response and pass that into the user instance's favorite stories array
   }

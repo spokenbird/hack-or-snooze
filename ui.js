@@ -259,7 +259,7 @@ $(async function () {
 
 
   /* Function that handles favorites */
-  $(".articles-container").on("click", "i", function (e) {
+  $(".articles-container").on("click", ".fa-star", function (e) {
     if (currentUser) {
       var storyID = $(e.target).parent().attr("id");
       if ($(e.target).hasClass("far")) {
@@ -294,13 +294,16 @@ $(async function () {
   });
 
 
+  // This block of code handles the my stories click in the nav-bar
   $('#nav-my-stories').on("click", function() {
+    // Hide the HTML page
     hideElements();
-    console.log(currentUser);
     for (const story of currentUser.ownStories) {
       hostName = getHostName(story.url);
+      // Rendering the HTML
       $myStories.append(`<li id="${story.storyId}">
         <i class="far fa-star"></i>
+        <i class="far fa-trash-alt"></i>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -329,5 +332,13 @@ $(async function () {
     $myStories.slideToggle();
   });
 
+// Deletes user stories
+  $("body").on("click", ".fa-trash-alt", async function(e) {
+    // console.log(e.target)
+    $(e.target).toggleClass("delete");
+    let $deleteID = $(e.target).parent().attr("id");
+    await storyList.removeStory(currentUser.loginToken, $deleteID);
+    $(e.target).parent().remove();
+  });
 
 });
