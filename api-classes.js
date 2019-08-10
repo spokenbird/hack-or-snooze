@@ -57,6 +57,14 @@ class StoryList {
     this.stories.unshift(addedStory);
     return addedStory;
   }
+  
+  async removeStory(token, storyId) {
+    const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, {data: { token }});
+    console.log(response);
+    this.ownStories = response.data.user.favorites;
+
+    // Plan to access the response and pass that into the user instance's favorite stories array
+  }
 }
 
 
@@ -171,10 +179,12 @@ class User {
 
   async removeFavorite(token, storyID) {
     const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyID}`, {data: { token }});
+    console.log(response);
     this.favorites = response.data.user.favorites;
 
     // Plan to access the response and pass that into the user instance's favorite stories array
   }
+  
 
 }
  

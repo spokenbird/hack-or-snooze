@@ -11,6 +11,7 @@ $(async function () {
   const $mainNav = $(".main-nav-links");
   const $submitLink = $("#nav-submit");
   const $allFavoritesList = $('#favorited-articles');
+  const $myStories = $("#my-articles");
 
   // global storyList variable
   let storyList = null;
@@ -121,7 +122,7 @@ $(async function () {
         if (currentFavorites.hasOwnProperty(storyItemID)) {
           $(storyItem).children().removeClass('far').addClass('fas');
         }
-      })
+      });
     }
   }
 
@@ -197,7 +198,8 @@ $(async function () {
       $filteredArticles,
       $ownStories,
       $loginForm,
-      $createAccountForm
+      $createAccountForm,
+      $allFavoritesList
     ];
     elementsArr.forEach($elem => $elem.hide());
   }
@@ -221,6 +223,7 @@ $(async function () {
     let author = $("#author").val();
     let title = $("#title").val();
     let url = $("#url").val();
+    console.log(currentUser);
 
     let newStory = await storyList.addStory(currentUser, { author, title, url });
     await generateStories();
@@ -274,7 +277,6 @@ $(async function () {
   /* Function that shows favorites on clicking favorites link */
   $('#nav-favorites').click(function () {
     hideElements();
-    console.log(currentUser.favorites);
     for (const favorite of currentUser.favorites) {
       hostName = getHostName(favorite.url);
       $allFavoritesList.append(`<li id="${favorite.storyId}">
@@ -290,5 +292,42 @@ $(async function () {
     }
     $allFavoritesList.slideToggle();
   });
+
+
+  $('#nav-my-stories').on("click", function() {
+    hideElements();
+    console.log(currentUser);
+    for (const story of currentUser.ownStories) {
+      hostName = getHostName(story.url);
+      $myStories.append(`<li id="${story.storyId}">
+        <i class="far fa-star"></i>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong>${story.title}</strong>
+        </a>
+        <small class="article-author">by ${story.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${story.username}</small>
+      </li>
+    `);
+    }
+    if (currentUser) {
+      showNavForLoggedInUser();
+      let currentUserStories = {};
+      for (let key of currentUser.favorites) {
+        if (currentUserStories[key] === undefined) {
+          currentUserStories[key.storyId] = 1;
+        }
+      }
+      $myStories.children().each(function (index, storyItem) {
+        console.log(storyItem);
+        let storyItemID = $(storyItem).attr('id');
+        if (currentUserStories.hasOwnProperty(storyItemID)) {
+          $(storyItem).find(">:first-child").removeClass('far').addClass('fas');
+        }
+      });
+    }
+    $myStories.slideToggle();
+  });
+
 
 });
